@@ -1,7 +1,8 @@
 var app = angular.module('sentinelDashboardApp');
 
+// @author lzhpo 修改 FlowServiceV1 为 FlowServiceV2
 app.controller('IdentityCtl', ['$scope', '$stateParams', 'IdentityService',
-  'ngDialog', 'FlowServiceV1', 'DegradeService', 'AuthorityRuleService', 'ParamFlowService', 'MachineService',
+  'ngDialog', 'FlowServiceV2', 'DegradeService', 'AuthorityRuleService', 'ParamFlowService', 'MachineService',
   '$interval', '$location', '$timeout',
   function ($scope, $stateParams, IdentityService, ngDialog,
     FlowService, DegradeService, AuthorityRuleService, ParamFlowService, MachineService, $interval, $location, $timeout) {
