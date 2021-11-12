@@ -27,7 +27,7 @@ public class FlowRuleNacosPublisher implements DynamicRulePublisher<List<FlowRul
     @Override
     public void publish(String app, List<FlowRuleEntity> rules) throws Exception {
         AssertUtil.notEmpty(app, "app name cannot be empty");
-        if (!ObjectUtils.isEmpty(rules)) {
+        if (rules != null) {
             configService.publishConfig(
                     app + NacosConfigUtil.FLOW_DATA_ID_POSTFIX,
                     NacosConfigUtil.GROUP_ID,

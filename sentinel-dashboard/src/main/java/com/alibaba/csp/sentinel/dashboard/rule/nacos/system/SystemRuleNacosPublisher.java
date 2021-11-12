@@ -27,7 +27,7 @@ public class SystemRuleNacosPublisher implements DynamicRulePublisher<List<Syste
     @Override
     public void publish(String app, List<SystemRuleEntity> rules) throws Exception {
         AssertUtil.notEmpty(app, "app name cannot be empty");
-        if (!ObjectUtils.isEmpty(rules)) {
+        if (rules != null) {
             configService.publishConfig(
                     app + NacosConfigUtil.SYSTEM_DATA_ID_POSTFIX,
                     NacosConfigUtil.GROUP_ID,

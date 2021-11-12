@@ -27,7 +27,7 @@ public class DegradeRuleNacosPublisher implements DynamicRulePublisher<List<Degr
     @Override
     public void publish(String app, List<DegradeRuleEntity> rules) throws Exception {
         AssertUtil.notEmpty(app, "app name cannot be empty");
-        if (!ObjectUtils.isEmpty(rules)) {
+        if (rules != null) {
             configService.publishConfig(
                     app + NacosConfigUtil.DEGRADE_DATA_ID_POSTFIX,
                     NacosConfigUtil.GROUP_ID,
