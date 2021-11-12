@@ -17,11 +17,12 @@ package com.alibaba.csp.sentinel.dashboard.controller;
 
 import com.alibaba.csp.sentinel.dashboard.auth.AuthAction;
 import com.alibaba.csp.sentinel.dashboard.auth.AuthService.PrivilegeType;
+import com.alibaba.csp.sentinel.dashboard.client.SentinelApiClient;
 import com.alibaba.csp.sentinel.dashboard.datasource.entity.rule.FlowRuleEntity;
+import com.alibaba.csp.sentinel.dashboard.discovery.MachineInfo;
 import com.alibaba.csp.sentinel.dashboard.domain.Result;
 import com.alibaba.csp.sentinel.dashboard.repository.rule.InMemoryRuleRepositoryAdapter;
-import com.alibaba.csp.sentinel.dashboard.rule.nacos.flow.FlowRuleNacosProvider;
-import com.alibaba.csp.sentinel.dashboard.rule.nacos.flow.FlowRuleNacosPublisher;
+import com.alibaba.csp.sentinel.dashboard.rule.StoreRuleApiClient;
 import com.alibaba.csp.sentinel.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Flow rule controller.
@@ -40,20 +43,18 @@ import java.util.concurrent.ExecutionException;
  */
 @RestController
 @RequestMapping(value = "/v1/flow")
-public class FlowControllerV1 {
+public class FlowControllerV1 implements BaseRulesController<FlowRuleEntity, Long> {
 
     private final Logger logger = LoggerFactory.getLogger(FlowControllerV1.class);
 
     @Autowired
     private InMemoryRuleRepositoryAdapter<FlowRuleEntity> repository;
 
-//    @Autowired
-//    private SentinelApiClient sentinelApiClient;
+    @Autowired
+    private SentinelApiClient sentinelApiClient;
 
     @Autowired
-    private FlowRuleNacosProvider ruleProvider;
-    @Autowired
-    private FlowRuleNacosPublisher rulePublisher;
+    private StoreRuleApiClient<FlowRuleEntity> storeRuleApiClient;
 
     @GetMapping("/rules")
     @AuthAction(PrivilegeType.READ_RULE)
@@ -71,8 +72,13 @@ public class FlowControllerV1 {
             return Result.ofFail(-1, "port can't be null");
         }
         try {
-//            List<FlowRuleEntity> rules = sentinelApiClient.fetchFlowRuleOfMachine(app, ip, port);
-            List<FlowRuleEntity> rules = ruleProvider.getRules(app);
+
+            List<FlowRuleEntity> rules;
+            if (isUseMemoryRule()) {
+                rules = sentinelApiClient.fetchFlowRuleOfMachine(app, ip, port);
+            } else {
+                rules = storeRuleApiClient.fetch(app, getRuleConfigTypeEnum());
+            }
 
             rules = repository.saveAll(rules);
             return Result.ofSuccess(rules);
@@ -145,8 +151,11 @@ public class FlowControllerV1 {
         try {
             entity = repository.save(entity);
 
-//            publishRules(entity.getApp(), entity.getIp(), entity.getPort()).get(5000, TimeUnit.MILLISECONDS);
-            publishRules(entity.getApp());
+            if (isUseMemoryRule()) {
+                publishRules(entity.getApp(), entity.getIp(), entity.getPort()).get(5000, TimeUnit.MILLISECONDS);
+            } else {
+                publishRules(repository, storeRuleApiClient, entity.getApp());
+            }
 
             return Result.ofSuccess(entity);
         } catch (Throwable t) {
@@ -226,8 +235,11 @@ public class FlowControllerV1 {
                 return Result.ofFail(-1, "save entity fail: null");
             }
 
-//            publishRules(entity.getApp(), entity.getIp(), entity.getPort()).get(5000, TimeUnit.MILLISECONDS);
-            publishRules(entity.getApp());
+            if (isUseMemoryRule()) {
+                publishRules(entity.getApp(), entity.getIp(), entity.getPort()).get(5000, TimeUnit.MILLISECONDS);
+            } else {
+                publishRules(repository, storeRuleApiClient, entity.getApp());
+            }
 
             return Result.ofSuccess(entity);
         } catch (Throwable t) {
@@ -256,8 +268,11 @@ public class FlowControllerV1 {
             return Result.ofFail(-1, e.getMessage());
         }
         try {
-//            publishRules(oldEntity.getApp(), oldEntity.getIp(), oldEntity.getPort()).get(5000, TimeUnit.MILLISECONDS);
-            publishRules(oldEntity.getApp());
+            if (isUseMemoryRule()) {
+                publishRules(oldEntity.getApp(), oldEntity.getIp(), oldEntity.getPort()).get(5000, TimeUnit.MILLISECONDS);
+            } else {
+                publishRules(repository, storeRuleApiClient, oldEntity.getApp());
+            }
 
             return Result.ofSuccess(id);
         } catch (Throwable t) {
@@ -268,13 +283,8 @@ public class FlowControllerV1 {
         }
     }
 
-//    private CompletableFuture<Void> publishRules(String app, String ip, Integer port) {
-//        List<FlowRuleEntity> rules = repository.findAllByMachine(MachineInfo.of(app, ip, port));
-//        return sentinelApiClient.setFlowRuleOfMachineAsync(app, ip, port, rules);
-//    }
-
-    private void publishRules(String appName) throws Exception {
-        List<FlowRuleEntity> rules = repository.findAllByApp(appName);
-        rulePublisher.publish(appName, rules);
+    private CompletableFuture<Void> publishRules(String app, String ip, Integer port) {
+        List<FlowRuleEntity> rules = repository.findAllByMachine(MachineInfo.of(app, ip, port));
+        return sentinelApiClient.setFlowRuleOfMachineAsync(app, ip, port, rules);
     }
 }

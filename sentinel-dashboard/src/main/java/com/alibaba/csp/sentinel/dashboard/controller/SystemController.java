@@ -19,10 +19,10 @@ import com.alibaba.csp.sentinel.dashboard.auth.AuthAction;
 import com.alibaba.csp.sentinel.dashboard.auth.AuthService.PrivilegeType;
 import com.alibaba.csp.sentinel.dashboard.client.SentinelApiClient;
 import com.alibaba.csp.sentinel.dashboard.datasource.entity.rule.SystemRuleEntity;
+import com.alibaba.csp.sentinel.dashboard.discovery.MachineInfo;
 import com.alibaba.csp.sentinel.dashboard.domain.Result;
 import com.alibaba.csp.sentinel.dashboard.repository.rule.RuleRepository;
-import com.alibaba.csp.sentinel.dashboard.rule.nacos.system.SystemRuleNacosProvider;
-import com.alibaba.csp.sentinel.dashboard.rule.nacos.system.SystemRuleNacosPublisher;
+import com.alibaba.csp.sentinel.dashboard.rule.StoreRuleApiClient;
 import com.alibaba.csp.sentinel.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,19 +39,18 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/system")
-public class SystemController {
+public class SystemController implements BaseRulesController<SystemRuleEntity, Long> {
 
     private final Logger logger = LoggerFactory.getLogger(SystemController.class);
 
     @Autowired
     private RuleRepository<SystemRuleEntity, Long> repository;
+
     @Autowired
     private SentinelApiClient sentinelApiClient;
 
     @Autowired
-    private SystemRuleNacosProvider ruleProvider;
-    @Autowired
-    private SystemRuleNacosPublisher rulePublisher;
+    private StoreRuleApiClient<SystemRuleEntity> storeRuleApiClient;
 
     private <R> Result<R> checkBasicParams(String app, String ip, Integer port) {
         if (StringUtil.isEmpty(app)) {
@@ -78,8 +77,12 @@ public class SystemController {
             return checkResult;
         }
         try {
-//            List<SystemRuleEntity> rules = sentinelApiClient.fetchSystemRuleOfMachine(app, ip, port);
-            List<SystemRuleEntity> rules = ruleProvider.getRules(app);
+            List<SystemRuleEntity> rules;
+            if (isUseMemoryRule()) {
+                rules = sentinelApiClient.fetchSystemRuleOfMachine(app, ip, port);
+            } else {
+                rules = storeRuleApiClient.fetch(app, getRuleConfigTypeEnum());
+            }
 
             rules = repository.saveAll(rules);
             return Result.ofSuccess(rules);
@@ -160,10 +163,15 @@ public class SystemController {
             return Result.ofThrowable(-1, throwable);
         }
 
-//        if (!publishRules(app, ip, port)) {
-//            logger.warn("Publish system rules fail after rule add");
-//        }
-        publishRules(entity.getApp());
+        if (isUseMemoryRule()) {
+            if (!publishRules(app, ip, port)) {
+                logger.warn("Publish system rules fail after rule add");
+            }
+        } else {
+            if (!publishRules(repository, storeRuleApiClient, app)) {
+                logger.warn("Publish system rules fail after rule add");
+            }
+        }
 
         return Result.ofSuccess(entity);
     }
@@ -225,10 +233,15 @@ public class SystemController {
             return Result.ofThrowable(-1, throwable);
         }
 
-//        if (!publishRules(entity.getApp(), entity.getIp(), entity.getPort())) {
-//            logger.info("publish system rules fail after rule update");
-//        }
-        publishRules(entity.getApp());
+        if (isUseMemoryRule()) {
+            if (!publishRules(entity.getApp(), entity.getIp(), entity.getPort())) {
+                logger.info("publish system rules fail after rule update");
+            }
+        } else {
+            if (!publishRules(repository, storeRuleApiClient, entity.getApp())) {
+                logger.info("publish system rules fail after rule update");
+            }
+        }
 
         return Result.ofSuccess(entity);
     }
@@ -250,21 +263,21 @@ public class SystemController {
             return Result.ofThrowable(-1, throwable);
         }
 
-//        if (!publishRules(oldEntity.getApp(), oldEntity.getIp(), oldEntity.getPort())) {
-//            logger.info("publish system rules fail after rule delete");
-//        }
-        publishRules(oldEntity.getApp());
+        if (isUseMemoryRule()) {
+            if (!publishRules(oldEntity.getApp(), oldEntity.getIp(), oldEntity.getPort())) {
+                logger.info("publish system rules fail after rule delete");
+            }
+        } else {
+            if (!publishRules(repository, storeRuleApiClient, oldEntity.getApp())) {
+                logger.info("publish system rules fail after rule delete");
+            }
+        }
 
         return Result.ofSuccess(id);
     }
 
-//    private boolean publishRules(String app, String ip, Integer port) {
-//        List<SystemRuleEntity> rules = repository.findAllByMachine(MachineInfo.of(app, ip, port));
-//        return sentinelApiClient.setSystemRuleOfMachine(app, ip, port, rules);
-//    }
-
-    private void publishRules(String app) throws Exception {
-        List<SystemRuleEntity> rules = repository.findAllByApp(app);
-        rulePublisher.publish(app, rules);
+    private boolean publishRules(String app, String ip, Integer port) {
+        List<SystemRuleEntity> rules = repository.findAllByMachine(MachineInfo.of(app, ip, port));
+        return sentinelApiClient.setSystemRuleOfMachine(app, ip, port, rules);
     }
 }
