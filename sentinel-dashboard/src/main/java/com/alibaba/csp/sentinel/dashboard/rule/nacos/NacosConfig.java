@@ -30,10 +30,10 @@ public class NacosConfig {
     @Value("${nacos.password:nacos}")
     private String password;
 
-    @Value("${nacos.group}")
+    @Value("${nacos.group:}")
     private String group;
 
-    @Value("${nacos.namespace}")
+    @Value("${nacos.namespace:}")
     private String namespace;
 
     @Bean
