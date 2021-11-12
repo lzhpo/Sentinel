@@ -10,6 +10,7 @@ import com.alibaba.nacos.api.exception.NacosException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Properties;
@@ -29,10 +30,10 @@ public class NacosConfig {
     @Value("${nacos.password:nacos}")
     private String password;
 
-    @Value("${nacos.group:SENTINEL_GROUP}")
+    @Value("${nacos.group}")
     private String group;
 
-    @Value("${nacos.namespace:8929a628-6949-4efc-bd5d-c494f18f8aa3}")
+    @Value("${nacos.namespace}")
     private String namespace;
 
     @Bean
@@ -99,10 +100,17 @@ public class NacosConfig {
     public ConfigService nacosConfigService() throws NacosException {
         Properties properties = new Properties();
         properties.put(PropertyKeyConst.SERVER_ADDR, address);
-        properties.put(PropertyKeyConst.NAMESPACE, namespace);
         properties.put(PropertyKeyConst.USERNAME, username);
         properties.put(PropertyKeyConst.PASSWORD, password);
-        properties.setProperty("group", group);
+
+        if (StringUtils.hasText(namespace)) {
+            properties.put(PropertyKeyConst.NAMESPACE, namespace);
+        }
+
+        if (StringUtils.hasText(group)) {
+            properties.setProperty("group", group);
+        }
+
         return ConfigFactory.createConfigService(properties);
     }
 }
