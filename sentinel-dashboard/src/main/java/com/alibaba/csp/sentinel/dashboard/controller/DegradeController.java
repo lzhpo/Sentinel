@@ -72,7 +72,7 @@ public class DegradeController implements BaseRulesController<DegradeRuleEntity,
             if (isUseMemoryRule()) {
                 rules = sentinelApiClient.fetchDegradeRuleOfMachine(app, ip, port);
             } else {
-                rules = storeRuleApiClient.fetch(app, getRuleConfigTypeEnum());
+                rules = storeRuleApiClient.fetch(app, getRuleTypeEnum());
             }
 
             rules = repository.saveAll(rules);

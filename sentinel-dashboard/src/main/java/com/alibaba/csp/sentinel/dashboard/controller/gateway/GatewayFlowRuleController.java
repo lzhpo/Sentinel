@@ -83,7 +83,7 @@ public class GatewayFlowRuleController implements BaseRulesController<GatewayFlo
             if (isUseMemoryRule()) {
                 rules = sentinelApiClient.fetchGatewayFlowRules(app, ip, port).get();
             } else {
-                rules = storeRuleApiClient.fetch(app, getRuleConfigTypeEnum());
+                rules = storeRuleApiClient.fetch(app, getRuleTypeEnum());
             }
 
             repository.saveAll(rules);

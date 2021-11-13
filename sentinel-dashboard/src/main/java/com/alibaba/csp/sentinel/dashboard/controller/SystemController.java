@@ -81,7 +81,7 @@ public class SystemController implements BaseRulesController<SystemRuleEntity, L
             if (isUseMemoryRule()) {
                 rules = sentinelApiClient.fetchSystemRuleOfMachine(app, ip, port);
             } else {
-                rules = storeRuleApiClient.fetch(app, getRuleConfigTypeEnum());
+                rules = storeRuleApiClient.fetch(app, getRuleTypeEnum());
             }
 
             rules = repository.saveAll(rules);

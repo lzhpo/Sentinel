@@ -71,7 +71,7 @@ public class AuthorityRuleController implements BaseRulesController<AuthorityRul
             if (isUseMemoryRule()) {
                 rules = sentinelApiClient.fetchAuthorityRulesOfMachine(app, ip, port);
             } else {
-                rules = storeRuleApiClient.fetch(app, getRuleConfigTypeEnum());
+                rules = storeRuleApiClient.fetch(app, getRuleTypeEnum());
             }
 
             rules = repository.saveAll(rules);

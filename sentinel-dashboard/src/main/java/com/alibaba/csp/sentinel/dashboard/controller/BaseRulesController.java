@@ -19,11 +19,21 @@ public interface BaseRulesController<T, S> {
 
     Logger logger = LoggerFactory.getLogger(BaseRulesController.class);
 
+    /**
+     * Whether to use memory-based storage rules
+     *
+     * @return boolean
+     */
     default boolean isUseMemoryRule() {
         return SpringContextHolder.getBean(DatasourceRuleProps.class).isUseMemoryRule();
     }
 
-    default RuleTypeEnum getRuleConfigTypeEnum() {
+    /**
+     * Get the generic type on the interface and parse out {@link RuleTypeEnum}
+     *
+     * @return {@link RuleTypeEnum}
+     */
+    default RuleTypeEnum getRuleTypeEnum() {
         return Optional.of(ResolvableType.forClass(getClass()))
                 .map(ResolvableType::getInterfaces)
                 .map(x -> x[0])
@@ -34,10 +44,18 @@ public interface BaseRulesController<T, S> {
                 .orElseThrow(() -> new IllegalArgumentException("Unable to get rule type"));
     }
 
+    /**
+     * Publish rules to configuration center
+     *
+     * @param repository {@link RuleRepository}
+     * @param apiClient  {@link StoreRuleApiClient}
+     * @param app        app
+     * @return boolean
+     */
     default boolean publishRules(RuleRepository<T, S> repository, StoreRuleApiClient<T> apiClient, String app) {
         List<T> rules = repository.findAllByApp(app);
         try {
-            return apiClient.publish(app, getRuleConfigTypeEnum(), rules);
+            return apiClient.publish(app, getRuleTypeEnum(), rules);
         } catch (Exception e) {
             logger.error("publishRules error", e);
         }

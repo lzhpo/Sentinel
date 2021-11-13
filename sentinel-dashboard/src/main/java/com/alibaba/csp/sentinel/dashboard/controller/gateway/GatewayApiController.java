@@ -80,7 +80,7 @@ public class GatewayApiController implements BaseRulesController<ApiDefinitionEn
             if (isUseMemoryRule()) {
                 apis = sentinelApiClient.fetchApis(app, ip, port).get();
             } else {
-                apis = storeRuleApiClient.fetch(app, getRuleConfigTypeEnum());
+                apis = storeRuleApiClient.fetch(app, getRuleTypeEnum());
             }
 
             repository.saveAll(apis);

@@ -100,7 +100,7 @@ public class ParamFlowRuleController implements BaseRulesController<ParamFlowRul
                         .thenApply(Result::ofSuccess)
                         .get();
             } else {
-                List<ParamFlowRuleEntity> rules = storeRuleApiClient.fetch(app, getRuleConfigTypeEnum());
+                List<ParamFlowRuleEntity> rules = storeRuleApiClient.fetch(app, getRuleTypeEnum());
                 repository.saveAll(rules);
                 return Result.ofSuccess(rules);
             }

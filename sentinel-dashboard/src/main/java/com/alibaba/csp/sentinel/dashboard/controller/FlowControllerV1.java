@@ -77,7 +77,7 @@ public class FlowControllerV1 implements BaseRulesController<FlowRuleEntity, Lon
             if (isUseMemoryRule()) {
                 rules = sentinelApiClient.fetchFlowRuleOfMachine(app, ip, port);
             } else {
-                rules = storeRuleApiClient.fetch(app, getRuleConfigTypeEnum());
+                rules = storeRuleApiClient.fetch(app, getRuleTypeEnum());
             }
 
             rules = repository.saveAll(rules);
