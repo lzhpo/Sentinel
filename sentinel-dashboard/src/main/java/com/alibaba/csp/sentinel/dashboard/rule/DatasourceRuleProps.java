@@ -25,10 +25,10 @@ public class DatasourceRuleProps {
     }
 
     public DatasourceNacosProps getNacos() {
-        return nacos;
+        return !ObjectUtils.isEmpty(nacos) ? nacos : new DatasourceNacosProps();
     }
 
     public void setNacos(DatasourceNacosProps nacos) {
-        this.nacos = !ObjectUtils.isEmpty(nacos) ? nacos : new DatasourceNacosProps();
+        this.nacos = nacos;
     }
 }
