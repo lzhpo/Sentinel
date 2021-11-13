@@ -5,7 +5,7 @@ package com.alibaba.csp.sentinel.dashboard.rule.nacos;
  */
 public class DatasourceNacosProps {
 
-    private String serverAddress = "localhost:8848";
+    private String serverAddr = "localhost:8848";
 
     private String username = "nacos";
 
@@ -15,12 +15,12 @@ public class DatasourceNacosProps {
 
     private String groupId = "SENTINEL_GROUP";
 
-    public String getServerAddress() {
-        return serverAddress;
+    public String getServerAddr() {
+        return serverAddr;
     }
 
-    public void setServerAddress(String serverAddress) {
-        this.serverAddress = serverAddress;
+    public void setServerAddr(String serverAddr) {
+        this.serverAddr = serverAddr;
     }
 
     public String getUsername() {

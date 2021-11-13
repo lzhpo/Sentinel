@@ -29,7 +29,7 @@ public class NacosConfig {
         final DatasourceNacosProps nacosProps = ruleProps.getNacos();
 
         Properties properties = new Properties();
-        properties.put(PropertyKeyConst.SERVER_ADDR, nacosProps.getServerAddress());
+        properties.put(PropertyKeyConst.SERVER_ADDR, nacosProps.getServerAddr());
         properties.put(PropertyKeyConst.USERNAME, nacosProps.getUsername());
         properties.put(PropertyKeyConst.PASSWORD, nacosProps.getPassword());
 
