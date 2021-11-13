@@ -1,9 +1,9 @@
 package com.alibaba.csp.sentinel.dashboard.rule.nacos;
 
 import com.alibaba.csp.sentinel.dashboard.rule.DatasourceRuleProps;
+import com.alibaba.csp.sentinel.dashboard.rule.NacosRuleConfigService;
+import com.alibaba.csp.sentinel.dashboard.rule.RuleConfigService;
 import com.alibaba.nacos.api.PropertyKeyConst;
-import com.alibaba.nacos.api.config.ConfigFactory;
-import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +25,7 @@ public class NacosConfig {
     }
 
     @Bean
-    public ConfigService nacosConfigService() throws NacosException {
+    public RuleConfigService nacosConfigService() throws NacosException {
         final DatasourceNacosProps nacosProps = ruleProps.getNacos();
 
         Properties properties = new Properties();
@@ -43,7 +43,7 @@ public class NacosConfig {
             properties.setProperty("group", groupId);
         }
 
-        return ConfigFactory.createConfigService(properties);
+        return new NacosRuleConfigService(properties);
     }
 
     @Bean
