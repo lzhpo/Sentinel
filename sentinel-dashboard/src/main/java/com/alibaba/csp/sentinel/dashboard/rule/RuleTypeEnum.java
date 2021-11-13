@@ -12,12 +12,39 @@ import java.util.Arrays;
  */
 public enum RuleTypeEnum {
 
+    /**
+     * {@link FlowRuleEntity}
+     */
     FLOW("flow-rules", FlowRuleEntity.class),
+
+    /**
+     * {@link ParamFlowRuleEntity}
+     */
     PARAM_FLOW("param-rules", ParamFlowRuleEntity.class),
+
+    /**
+     * {@link AuthorityRuleEntity}
+     */
     AUTHORITY("authority-rules", AuthorityRuleEntity.class),
+
+    /**
+     * {@link DegradeRuleEntity}
+     */
     DEGRADE("degrade-rules", DegradeRuleEntity.class),
+
+    /**
+     * {@link SystemRuleEntity}
+     */
     SYSTEM("system-rules", SystemRuleEntity.class),
+
+    /**
+     * {@link GatewayFlowRuleEntity}
+     */
     GATEWAY_FLOW("gateway-flow-rules", GatewayFlowRuleEntity.class),
+
+    /**
+     * {@link GatewayParamFlowItemEntity}
+     */
     GATEWAY_PARAM_FLOW("gateway-param-flow-rules", GatewayParamFlowItemEntity.class);
 
     private final String value;

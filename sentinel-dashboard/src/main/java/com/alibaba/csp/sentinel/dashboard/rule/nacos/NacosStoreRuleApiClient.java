@@ -27,7 +27,7 @@ public class NacosStoreRuleApiClient<T> extends BaseStoreRuleApiClient<T> {
     @SuppressWarnings({"unchecked"})
     public List<T> fetch(String app, RuleTypeEnum configType) throws Exception {
         String ruleName = this.getRuleConfigId(app, configType);
-        String rulesJson = configService.getConfig(ruleName, datasourceRuleProps.getNacos().getGroup(), 3000);
+        String rulesJson = configService.getConfig(ruleName, datasourceRuleProps.getNacos().getGroupId(), 3000);
         final Class<T> clazz = (Class<T>) configType.getClazz();
         return !StringUtil.isEmpty(rulesJson) ? JSON.parseArray(rulesJson, clazz) : Collections.emptyList();
     }
@@ -37,7 +37,7 @@ public class NacosStoreRuleApiClient<T> extends BaseStoreRuleApiClient<T> {
         AssertUtil.notEmpty(app, "app name cannot be empty");
         if (rules != null) {
             String ruleName = this.getRuleConfigId(app, configType);
-            String groupId = datasourceRuleProps.getNacos().getGroup();
+            String groupId = datasourceRuleProps.getNacos().getGroupId();
             String rulesJson = JSON.toJSONString(rules, true);
             configService.publishConfig(ruleName, groupId, rulesJson);
         }

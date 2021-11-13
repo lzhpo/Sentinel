@@ -13,7 +13,7 @@ public class DatasourceNacosProps {
 
     private String namespace = "";
 
-    private String group = "SENTINEL_GROUP";
+    private String groupId = "SENTINEL_GROUP";
 
     public String getServerAddress() {
         return serverAddress;
@@ -47,11 +47,11 @@ public class DatasourceNacosProps {
         this.namespace = namespace;
     }
 
-    public String getGroup() {
-        return group;
+    public String getGroupId() {
+        return groupId;
     }
 
-    public void setGroup(String group) {
-        this.group = group;
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
     }
 }
