@@ -1,9 +1,7 @@
 package com.alibaba.csp.sentinel.dashboard.rule;
 
 import com.alibaba.csp.sentinel.dashboard.datasource.entity.gateway.ApiDefinitionEntity;
-import com.alibaba.csp.sentinel.dashboard.datasource.entity.gateway.ApiPredicateItemEntity;
 import com.alibaba.csp.sentinel.dashboard.datasource.entity.gateway.GatewayFlowRuleEntity;
-import com.alibaba.csp.sentinel.dashboard.datasource.entity.gateway.GatewayParamFlowItemEntity;
 import com.alibaba.csp.sentinel.dashboard.datasource.entity.rule.*;
 import org.springframework.util.Assert;
 
@@ -15,49 +13,39 @@ import java.util.Arrays;
 public enum RuleTypeEnum {
 
     /**
-     * {@link FlowRuleEntity}
+     * 流控规则
      */
     FLOW("flow-rules", FlowRuleEntity.class),
 
     /**
-     * {@link ParamFlowRuleEntity}
+     * 热点规则
      */
     PARAM_FLOW("param-rules", ParamFlowRuleEntity.class),
 
     /**
-     * {@link AuthorityRuleEntity}
+     * 授权规则
      */
     AUTHORITY("authority-rules", AuthorityRuleEntity.class),
 
     /**
-     * {@link DegradeRuleEntity}
+     * 熔断规则（网关也通用）
      */
     DEGRADE("degrade-rules", DegradeRuleEntity.class),
 
     /**
-     * {@link SystemRuleEntity}
+     * 系统规则（网关也通用）
      */
     SYSTEM("system-rules", SystemRuleEntity.class),
 
     /**
-     * {@link ApiDefinitionEntity}
+     * 网关API管理
      */
-    GATEWAY_DEFINITION("gateway-definition-rules", ApiDefinitionEntity.class),
+    GATEWAY_DEFINITION("gateway-api-definition-rules", ApiDefinitionEntity.class),
 
     /**
-     * {@link ApiPredicateItemEntity}
+     * 网关流控规则
      */
-    GATEWAY_PREDICATE_ITEM("gateway-predicate-item-rules", ApiPredicateItemEntity.class),
-
-    /**
-     * {@link GatewayFlowRuleEntity}
-     */
-    GATEWAY_FLOW("gateway-flow-rules", GatewayFlowRuleEntity.class),
-
-    /**
-     * {@link GatewayParamFlowItemEntity}
-     */
-    GATEWAY_PARAM_FLOW("gateway-param-flow-rules", GatewayParamFlowItemEntity.class);
+    GATEWAY_FLOW("gateway-flow-rules", GatewayFlowRuleEntity.class);
 
     private final String value;
     private final Class<?> clazz;
