@@ -36,11 +36,6 @@ public class NacosConfig {
             properties.put(PropertyKeyConst.NAMESPACE, namespace);
         }
 
-        final String groupId = nacosProps.getGroupId();
-        if (StringUtils.hasText(groupId)) {
-            properties.setProperty("group", groupId);
-        }
-
         return ConfigFactory.createConfigService(properties);
     }
 
