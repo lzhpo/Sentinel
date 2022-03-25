@@ -16,11 +16,10 @@
 package com.alibaba.csp.sentinel.dashboard.controller;
 
 import com.alibaba.csp.sentinel.dashboard.discovery.AppManagement;
-import com.alibaba.csp.sentinel.util.StringUtil;
-
 import com.alibaba.csp.sentinel.dashboard.discovery.MachineInfo;
 import com.alibaba.csp.sentinel.dashboard.domain.Result;
-
+import com.alibaba.csp.sentinel.util.StringUtil;
+import com.alibaba.nacos.common.utils.IPUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import sun.net.util.IPAddressUtil;
 
 @Controller
 @RequestMapping(value = "/registry", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -52,7 +50,7 @@ public class MachineRegistryController {
         if (StringUtil.isBlank(ip) || ip.length() > 128) {
             return Result.ofFail(-1, "invalid ip: " + ip);
         }
-        if (!IPAddressUtil.isIPv4LiteralAddress(ip) && !IPAddressUtil.isIPv6LiteralAddress(ip)) {
+        if (!IPUtil.isIPv4(ip) && !IPUtil.isIPv6(ip)) {
             return Result.ofFail(-1, "invalid ip: " + ip);
         }
         if (port == null || port < -1) {
