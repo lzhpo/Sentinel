@@ -67,7 +67,7 @@ public enum RuleTypeEnum {
         Assert.notNull(clazz, "Rule type class cannot null");
         return Arrays.stream(RuleTypeEnum.values())
                 .filter(x -> clazz.isAssignableFrom(x.getClazz()))
-                .findFirst()
+                .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("Illegal rule type: " + clazz));
     }
 }
